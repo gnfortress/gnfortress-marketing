@@ -1,0 +1,19 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*~
+
+# Temp / 작업 산출물
+*.tmp
+~$*
+*.bak
+
+# 민감 자료 (실수 방지 — 별도 보관)
+*secret*
+*.env
