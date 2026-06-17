@@ -439,7 +439,7 @@
       </div>
       <div class="cf" style="margin-top:14px"><label>문의 내용 (선택)</label><textarea id="c_msg" rows="3" placeholder="환경·규모·일정 등을 적어주시면 상담이 빨라집니다."></textarea></div>
       <button class="btn btn-primary" style="width:100%;margin-top:18px" onclick="sendConsult()">상담 신청하기</button>
-      <p style="font-size:12px;color:var(--muted);text-align:center;margin-top:10px">버튼을 누르면 메일 작성 창이 열립니다. 또는 직접 <b>sales@guardiannet.co.kr</b> 로 문의하세요.</p>
+      <p style="font-size:12px;color:var(--muted);text-align:center;margin-top:10px">신청하시면 가디언넷이 곧 연락드립니다. 또는 직접 <b>sales@guardiannet.co.kr</b> 로 문의하세요.</p>
     </div>
   </div>
 </section>
@@ -479,16 +479,34 @@
   </div>
 </footer>
 
+<!-- EmailJS (브라우저에서 직접 메일 발송) -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script>
+  emailjs.init('l4XSjXF_razaAAw6C');
   function _v(id){ return document.getElementById(id).value.trim(); }
   function sendConsult(){
     var company=_v('c_company'), name=_v('c_name'), email=_v('c_email'), phone=_v('c_phone');
     if(!company||!name||!email||!phone){ alert('회사명·담당자·이메일·연락처를 입력해주세요.'); return; }
     var interests=[].slice.call(document.querySelectorAll('.c_interest:checked')).map(function(c){return c.value;}).join(', ');
     var msg=_v('c_msg');
-    var subject='[gnFortress 도입 상담] '+company;
-    var body='회사명: '+company+'\n담당자: '+name+'\n이메일: '+email+'\n연락처: '+phone+'\n관심 분야: '+(interests||'-')+'\n\n문의 내용:\n'+(msg||'-');
-    window.location.href='mailto:sales@guardiannet.co.kr?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+    var btn=document.querySelector('#contact .btn-primary');
+    var old=btn?btn.textContent:'';
+    if(btn){ btn.disabled=true; btn.textContent='전송 중...'; }
+    emailjs.send('service_2ren57e','template_oqojmu9',{
+      company: company,
+      name: name,
+      email: email,
+      mobile: phone,
+      order: '[관심분야] '+(interests||'-')+' / [문의] '+(msg||'내용 없음')
+    }).then(function(){
+      alert('상담 신청이 접수되었습니다. 가디언넷이 곧 연락드리겠습니다. 🙏');
+      ['c_company','c_name','c_email','c_phone','c_msg'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+    }).catch(function(err){
+      console.error(err);
+      alert('전송 중 오류가 발생했습니다. 잠시 후 다시 시도하거나 sales@guardiannet.co.kr 로 문의해 주세요.');
+    }).finally(function(){
+      if(btn){ btn.disabled=false; btn.textContent=old; }
+    });
   }
 </script>
 
